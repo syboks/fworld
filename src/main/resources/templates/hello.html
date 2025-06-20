@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Appointment System</title>
+    <!--<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: #f8fafc;
+            padding: 25px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .week-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .week-nav button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .week-nav button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .current-week {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .approval-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .approve-all-btn, .view-issues-btn {
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .approve-all-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .view-issues-btn {
+            background: linear-gradient(135deg, #ed64a6 0%, #d53f8c 100%);
+            box-shadow: 0 4px 15px rgba(237, 100, 166, 0.4);
+        }
+
+        .approve-all-btn:hover, .view-issues-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+        }
+
+        .calendar {
+            padding: 30px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-header {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .day-cell {
+            background: white;
+            min-height: 200px;
+            padding: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .day-cell:hover {
+            background: #f7fafc;
+            transform: scale(1.02);
+        }
+
+        .day-date {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .add-appointment {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.4);
+        }
+
+        .add-appointment:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.6);
+        }
+
+        .appointment {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: 2px solid #fed7aa;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(252, 182, 159, 0.3);
+        }
+
+        .appointment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(252, 182, 159, 0.5);
+        }
+
+        .appointment.pending {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            border-color: #f59e0b;
+        }
+
+        .appointment.approved {
+            background: linear-gradient(135deg, #d1fae5 0%, #10b981 100%);
+            border-color: #059669;
+            color: white;
+        }
+
+        .appointment.rejected {
+            background: linear-gradient(135deg, #fee2e2 0%, #ef4444 100%);
+            border-color: #dc2626;
+            color: white;
+        }
+
+        .appointment.completed {
+            background: linear-gradient(135deg, #e0e7ff 0%, #6366f1 100%);
+            border-color: #4f46e5;
+            color: white;
+        }
+
+        .appointment-time {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .appointment-title {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .appointment-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .delete-btn, .approve-btn, .reject-btn, .complete-btn, .notes-btn {
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .approve-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .complete-btn {
+            background: #6366f1;
+            color: white;
+        }
+
+        .notes-btn {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .delete-btn:hover, .approve-btn:hover, .reject-btn:hover, .complete-btn:hover, .notes-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .issues-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .issue-section {
+            border: 2px solid #fed7aa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 10%);
+        }
+
+        .issue-section h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .issue-checkbox {
+            margin-bottom: 15px;
+        }
+
+        .issue-checkbox input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .issue-checkbox label {
+            display: inline;
+            font-weight: normal;
+        }
+
+        .issue-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .issue-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .issue-priority {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority-critical {
+            background: #fde2e7;
+            color: #be185d;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ed64a6 0%, #d53f8c 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            background: #f8fafc;
+            padding: 20px 30px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .issues-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .week-nav {
+                justify-content: center;
+            }
+
+            .modal-actions {
+                justify-content: center;
+            }
+        }
+    </style>-->
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --secondary-gradient: linear-gradient(135deg, #16a085 0%, #f4d03f 100%);
+            --accent-gradient: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            --danger-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            --success-gradient: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            --info-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            --light-gradient: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            --dark-gradient: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.85rem;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 20% 80%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(142, 68, 173, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(22, 160, 133, 0.1) 0%, transparent 50%);
+            background-size: 400px 400px, 600px 600px, 800px 800px;
+            animation: float 20s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '∫ ∂f/∂x dx = f(x) + C • ∑ᵢ₌₁ⁿ xᵢ • π = 3.14159... • √(a² + b²) • lim(x→∞) • ∇f = (∂f/∂x, ∂f/∂y) • α β γ δ ε ζ η θ • ∞ ∀ ∃ ∈ ∉ ∪ ∩ ⊂ ⊆ • f(x) = ax² + bx + c • E = mc² • a² + b² = c² • sin²θ + cos²θ = 1 • log₂(8) = 3 • ∫₀^∞ e^(-x²) dx = √π/2 • Σ(1/n²) = π²/6 • ∮ F⋅dr = ∬ (∇×F)⋅dA • ∂²u/∂t² = c²∇²u • ℝ ℂ ℕ ℚ ℤ • ∅ ∞ ∝ ≈ ≠ ≤ ≥ • ∴ ∵ ∣ ∤ ∥ ⊥ • ∧ ∨ ¬ → ↔ ⊕ • ∑ᵢ₌₁^∞ 1/i! = e • ∫₋∞^∞ e^(-x²/2) dx = √(2π) • ∂/∂x[∫ᵃˣ f(t)dt] = f(x) • lim(n→∞) (1 + 1/n)ⁿ = e • ∫ 1/x dx = ln|x| + C • d/dx[xⁿ] = nxⁿ⁻¹ • ∫ sin(x) dx = -cos(x) + C • ∫ cos(x) dx = sin(x) + C • tan(x) = sin(x)/cos(x) • sec²(x) = 1 + tan²(x) • sinh(x) = (eˣ - e⁻ˣ)/2 • cosh(x) = (eˣ + e⁻ˣ)/2 • φ = (1 + √5)/2 ≈ 1.618 • ζ(s) = Σ(1/nˢ) • Γ(n) = (n-1)! • β(x,y) = ∫₀¹ tˣ⁻¹(1-t)ʸ⁻¹dt • F(s) = ∫₀^∞ f(t)e^(-st)dt • ∇²f = ∂²f/∂x² + ∂²f/∂y² + ∂²f/∂z² • det(A) = Σ sgn(σ)∏aᵢ,σ(ᵢ) • tr(A) = Σ aᵢᵢ • rank(A) ≤ min(m,n) • ||v|| = √(v₁² + v₂² + ... + vₙ²) • v⋅w = ||v||||w||cos(θ) • v×w = ||v||||w||sin(θ)n̂ • P(A∩B) = P(A)P(B|A) • E[X] = Σ xᵢP(X=xᵢ) • Var(X) = E[X²] - (E[X])² • σ = √Var(X) • f(x) = (1/σ√2π)e^(-(x-μ)²/2σ²) • ∫₋∞^∞ f(x)dx = 1 • P(|X-μ| ≥ kσ) ≤ 1/k² • lim(n→∞) (1 - 1/n)ⁿ = 1/e • ∫ e^(ax) dx = (1/a)e^(ax) + C • ∫ 1/(x²+a²) dx = (1/a)arctan(x/a) + C • ∫ √(a²-x²) dx = (x/2)√(a²-x²) + (a²/2)arcsin(x/a) + C • ∫₀^π sin(x) dx = 2 • ∫₀^(π/2) sin²(x) dx = π/4 • ∫₀^∞ xe^(-x) dx = 1 • ∫₀^∞ x²e^(-x) dx = 2 • ∫₀^∞ e^(-x²) dx = √π/2 • ∫₀^∞ sin(x)/x dx = π/2 • ∫₀^∞ cos(x²) dx = √π/2√2 • ∫₀^∞ sin(x²) dx = √π/2√2 • ∫₀^1 xⁿ dx = 1/(n+1) • ∫₀^1 √x dx = 2/3 • ∫₀^1 1/√x dx = 2 • ∫₀^1 ln(x) dx = -1 • ∫₀^1 x ln(x) dx = -1/4 • ∫₀^1 (1-x)ⁿ dx = 1/(n+1) • ∫₀^∞ x^n e^(-x) dx = n! • ∫₀^∞ x^(n-1) e^(-x) dx = Γ(n) • ∫₀^π/2 sin^n(x) dx = ∫₀^π/2 cos^n(x) dx';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.05);
+            font-size: 0.7rem;
+            line-height: 1.8;
+            word-wrap: break-word;
+            overflow: hidden;
+            z-index: -1;
+            animation: scroll 60s linear infinite;
+            padding: 20px;
+            white-space: pre-wrap;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+        }
+
+        @keyframes scroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow:
+                    0 25px 50px rgba(0, 0, 0, 0.15),
+                    0 10px 25px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 35px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .controls {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: relative;
+        }
+
+        .controls::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.3), transparent);
+        }
+
+        .week-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .week-nav button {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                    0 4px 15px rgba(142, 68, 173, 0.3),
+                    0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .week-nav button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .week-nav button:hover::before {
+            left: 100%;
+        }
+
+        .week-nav button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow:
+                    0 8px 25px rgba(142, 68, 173, 0.4),
+                    0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .current-week {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .approval-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .approve-all-btn, .view-issues-btn {
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .approve-all-btn {
+            background: var(--success-gradient);
+            box-shadow:
+                    0 4px 15px rgba(39, 174, 96, 0.3),
+                    0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-issues-btn {
+            background: var(--warning-gradient);
+            box-shadow:
+                    0 4px 15px rgba(243, 156, 18, 0.3),
+                    0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .approve-all-btn::before, .view-issues-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .approve-all-btn:hover::before, .view-issues-btn:hover::before {
+            left: 100%;
+        }
+
+        .approve-all-btn:hover, .view-issues-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow:
+                    0 8px 25px rgba(39, 174, 96, 0.4),
+                    0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .view-issues-btn:hover {
+            box-shadow:
+                    0 8px 25px rgba(243, 156, 18, 0.4),
+                    0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .calendar {
+            padding: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            background: var(--dark-gradient);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow:
+                    0 15px 35px rgba(0, 0, 0, 0.1),
+                    0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .day-header {
+            background: var(--dark-gradient);
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .day-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.6), transparent);
+        }
+
+        .day-cell {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            min-height: 180px;
+            padding: 15px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .day-cell:hover {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            transform: scale(1.02);
+            box-shadow:
+                    0 8px 25px rgba(0, 0, 0, 0.1),
+                    0 3px 10px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .day-date {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-appointment {
+            background: var(--info-gradient);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                    0 3px 10px rgba(52, 152, 219, 0.3),
+                    0 1px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-appointment::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-appointment:hover::before {
+            left: 100%;
+        }
+
+        .add-appointment:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow:
+                    0 6px 20px rgba(52, 152, 219, 0.4),
+                    0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .appointment {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: 2px solid rgba(252, 182, 159, 0.5);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                    0 3px 10px rgba(252, 182, 159, 0.3),
+                    0 1px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .appointment::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        }
+
+        .appointment:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow:
+                    0 6px 20px rgba(252, 182, 159, 0.4),
+                    0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .appointment.pending {
+            background: var(--warning-gradient);
+            border-color: rgba(243, 156, 18, 0.5);
+            color: white;
+        }
+
+        .appointment.approved {
+            background: var(--success-gradient);
+            border-color: rgba(39, 174, 96, 0.5);
+            color: white;
+        }
+
+        .appointment.rejected {
+            background: var(--danger-gradient);
+            border-color: rgba(231, 76, 60, 0.5);
+            color: white;
+        }
+
+        .appointment.completed {
+            background: var(--accent-gradient);
+            border-color: rgba(142, 68, 173, 0.5);
+            color: white;
+        }
+
+        .appointment-time {
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
+        .appointment-title {
+            font-size: 0.75rem;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .appointment-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .delete-btn, .approve-btn, .reject-btn, .complete-btn, .notes-btn {
+            border: none;
+            padding: 3px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .delete-btn {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .approve-btn {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .reject-btn {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .complete-btn {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .notes-btn {
+            background: var(--info-gradient);
+            color: white;
+        }
+
+        .delete-btn:hover, .approve-btn:hover, .reject-btn:hover, .complete-btn:hover, .notes-btn:hover {
+            transform: scale(1.1) translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .issues-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger-gradient);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            margin: 3% auto;
+            padding: 35px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 650px;
+            box-shadow:
+                    0 25px 50px rgba(0, 0, 0, 0.3),
+                    0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 0.85rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.5;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow:
+                    0 0 0 3px rgba(52, 152, 219, 0.1),
+                    0 5px 15px rgba(52, 152, 219, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .issue-section {
+            border: 2px solid rgba(243, 156, 18, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #fef9e7 0%, #ffeaa7 10%);
+        }
+
+        .issue-section h3 {
+            color: #d68910;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .issue-checkbox {
+            margin-bottom: 15px;
+        }
+
+        .issue-checkbox input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .issue-checkbox label {
+            display: inline;
+            font-weight: normal;
+        }
+
+        .issue-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .issue-item h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .issue-priority {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-low {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .priority-medium {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .priority-high {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .priority-critical {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-gradient);
+            color: #34495e;
+            box-shadow: 0 4px 15px rgba(189, 195, 199, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(189, 195, 199, 0.4);
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 25px 30px;
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            position: relative;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.3), transparent);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 15px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .issues-list {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(52, 152, 219, 0.5) rgba(0, 0, 0, 0.1);
+        }
+
+        .issues-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .issues-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .issues-list::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .issues-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gradient);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                margin: 0 10px;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(7, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 968px) {
+            .calendar-grid {
+                grid-template-columns: repeat(7, minmax(120px, 1fr));
+            }
+
+            .day-cell {
+                min-height: 150px;
+                padding: 10px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .week-nav {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .calendar {
+                padding: 20px;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+                gap: 2px;
+            }
+
+            .day-cell {
+                min-height: 120px;
+                padding: 12px;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                padding: 25px;
+                width: 95%;
+            }
+
+            .modal-actions {
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stat-item {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .controls {
+                padding: 20px 15px;
+            }
+
+            .calendar {
+                padding: 15px;
+            }
+
+            .approval-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .approve-all-btn, .view-issues-btn {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Enhanced animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .day-cell {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .appointment {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        /* Custom scrollbar for modal content */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gradient);
+        }
+
+        /* Focus states for accessibility */
+        .btn:focus,
+        .add-appointment:focus,
+        .week-nav button:focus,
+        .approve-all-btn:focus,
+        .view-issues-btn:focus {
+            outline: 3px solid rgba(52, 152, 219, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Loading state */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Weekly Appointment System</h1>
+        <p>Manage your appointments with style and efficiency</p>
+    </div>
+
+    <div class="controls">
+        <div class="week-nav">
+            <button onclick="previousWeek()">← Previous</button>
+            <span class="current-week" id="currentWeek">Week of June 16 - June 22, 2025</span>
+            <button onclick="nextWeek()">Next →</button>
+        </div>
+        <div class="approval-controls">
+            <button class="approve-all-btn" onclick="approveAllWeek()">Approve All Week</button>
+            <button class="view-issues-btn" onclick="openIssuesModal()">View Issues</button>
+        </div>
+    </div>
+
+    <div class="calendar">
+        <div class="calendar-grid" id="calendar">
+            <!-- Calendar will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <span class="stat-value" id="totalAppointments">0</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="pendingAppointments">0</span>
+            <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="approvedAppointments">0</span>
+            <span class="stat-label">Approved</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="rejectedAppointments">0</span>
+            <span class="stat-label">Rejected</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="completedAppointments">0</span>
+            <span class="stat-label">Completed</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="totalIssues">0</span>
+            <span class="stat-label">Issues</span>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Modal -->
+<div id="appointmentModal" class="modal">
+    <div class="modal-content">
+        <h2>Create New Appointment</h2>
+        <form id="appointmentForm">
+            <div class="form-group">
+                <label for="appointmentTitle">Client Name:</label>
+                <input type="text" id="appointmentTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="appointmentTime">Time:</label>
+                <input type="time" id="appointmentTime" required>
+            </div>
+            <div class="form-group">
+                <label for="appointmentDescription">Description:</label>
+                <textarea id="appointmentDescription" rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create Appointment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Meeting Notes Modal -->
+<div id="notesModal" class="modal">
+    <div class="modal-content">
+        <h2>Mark Appointment as Completed</h2>
+        <p id="appointmentDetails" style="color: #718096; margin-bottom: 20px;"></p>
+        <form id="notesForm">
+            <div class="form-group">
+                <label for="meetingNotes">Meeting Notes:</label>
+                <textarea id="meetingNotes" rows="6" placeholder="Enter what transpired during the meeting..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="completionTime">Actual Meeting Time:</label>
+                <input type="datetime-local" id="completionTime" required>
+            </div>
+
+            <div class="issue-section">
+                <h3>🚨 Issue Tracking</h3>
+                <div class="issue-checkbox">
+                    <input type="checkbox" id="hasIssues" onchange="toggleIssueForm()">
+                    <label for="hasIssues">This meeting resulted in issues that need follow-up action</label>
+                </div>
+
+                <div id="issueForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="issueTitle">Issue Title:</label>
+                        <input type="text" id="issueTitle" placeholder="Brief description of the issue">
+                    </div>
+                    <div class="form-group">
+                        <label for="issueDescription">Issue Description:</label>
+                        <textarea id="issueDescription" rows="4" placeholder="Detailed description of the issue and required actions"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="issuePriority">Priority Level:</label>
+                        <select id="issuePriority">
+                            <option value="low">Low - Can be addressed when convenient</option>
+                            <option value="medium" selected>Medium - Should be addressed within a week</option>
+                            <option value="high">High - Needs attention within 2-3 days</option>
+                            <option value="critical">Critical - Immediate action required</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="issueCategory">Category:</label>
+                        <select id="issueCategory">
+                            <option value="technical">Technical Issue</option>
+                            <option value="process">Process Improvement</option>
+                            <option value="resource">Resource Request</option>
+                            <option value="policy">Policy Clarification</option>
+                            <option value="training">Training Need</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignedTo">Assign To:</label>
+                        <input type="text" id="assignedTo" placeholder="Person or department responsible for resolution">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date:</label>
+                        <input type="date" id="dueDate">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeNotesModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Mark as Completed</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Notes Modal -->
+<div id="viewNotesModal" class="modal">
+    <div class="modal-content">
+        <h2>Meeting Details</h2>
+        <div id="meetingDetailsContent">
+            <!-- Meeting details will be populated here -->
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeViewNotesModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Issues Modal -->
+<div id="issuesModal" class="modal">
+    <div class="modal-content">
+        <h2>All Issues & Helpdesk Tickets</h2>
+        <div class="issues-list" id="issuesList">
+            <!-- Issues will be populated here -->
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeIssuesModal()">Close</button>
+            <button type="button" class="btn btn-warning" onclick="exportIssues()">Export Issues</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global variables
+    let appointments = {};
+    let issues = [];
+    let currentWeekStart = new Date();
+    let selectedDate = null;
+    let selectedAppointmentId = null;
+
+    // Initialize the calendar
+    document.addEventListener('DOMContentLoaded', function() {
+        setCurrentWeek();
+        generateCalendar();
+        updateStats();
+    });
+
+    function setCurrentWeek() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const diff = today.getDate() - dayOfWeek;
+        currentWeekStart = new Date(today.setDate(diff));
+    }
+
+    function generateCalendar() {
+        const calendar = document.getElementById('calendar');
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        calendar.innerHTML = '';
+
+        // Generate day headers
+        days.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.textContent = day;
+            calendar.appendChild(dayHeader);
+        });
+
+        // Generate day cells
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(currentWeekStart);
+            date.setDate(date.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+
+            const dayCell = document.createElement('div');
+            dayCell.className = 'day-cell';
+            dayCell.innerHTML = `
+                <div class="day-date">${date.getDate()}</div>
+                <button class="add-appointment" onclick="openAppointmentModal('${dateStr}')">
+                    + Add Appointment
+                </button>
+                <div id="appointments-${dateStr}"></div>
+            `;
+
+            calendar.appendChild(dayCell);
+            renderAppointments(dateStr);
+        }
+
+        updateWeekDisplay();
+    }
+
+    function updateWeekDisplay() {
+        const endDate = new Date(currentWeekStart);
+        endDate.setDate(endDate.getDate() + 6);
+
+        const startStr = currentWeekStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        const endStr = endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        document.getElementById('currentWeek').textContent = `Week of ${startStr} - ${endStr}`;
+    }
+
+    function previousWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        generateCalendar();
+        updateStats();
+    }
+
+    function nextWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        generateCalendar();
+        updateStats();
+    }
+
+    function openAppointmentModal(date) {
+        selectedDate = date;
+        document.getElementById('appointmentModal').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('appointmentModal').classList.add('show');
+        }, 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('appointmentModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.getElementById('appointmentForm').reset();
+        }, 300);
+    }
+
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('appointmentTitle').value;
+        const time = document.getElementById('appointmentTime').value;
+        const description = document.getElementById('appointmentDescription').value;
+
+        const appointment = {
+            id: Date.now(),
+            title,
+            time,
+            description,
+            status: 'pending',
+            date: selectedDate,
+            notes: null,
+            completedAt: null,
+            issues: []
+        };
+
+        if (!appointments[selectedDate]) {
+            appointments[selectedDate] = [];
+        }
+
+        appointments[selectedDate].push(appointment);
+        appointments[selectedDate].sort((a, b) => a.time.localeCompare(b.time));
+
+        renderAppointments(selectedDate);
+        updateStats();
+        closeModal();
+    });
+
+    function renderAppointments(date) {
+        const container = document.getElementById(`appointments-${date}`);
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (appointments[date]) {
+            appointments[date].forEach(appointment => {
+                const issueCount = appointment.issues ? appointment.issues.length : 0;
+                const appointmentDiv = document.createElement('div');
+                appointmentDiv.className = `appointment ${appointment.status}`;
+                appointmentDiv.innerHTML = `
+                    ${issueCount > 0 ? `<div class="issues-indicator">${issueCount}</div>` : ''}
+                    <div class="appointment-time">${formatTime(appointment.time)}</div>
+                    <div class="appointment-title">${appointment.title}</div>
+                    <div class="appointment-status">${appointment.status}</div>
+                    ${appointment.status === 'completed' && appointment.completedAt ?
+                    `<div style="font-size: 0.7rem; margin-top: 4px; opacity: 0.8;">
+                            Completed: ${new Date(appointment.completedAt).toLocaleString()}
+                        </div>` : ''}
+                    <div class="appointment-actions">
+                        <button class="delete-btn" onclick="deleteAppointment('${date}', ${appointment.id})">Delete</button>
+                        ${appointment.status === 'pending' ? `
+                            <button class="approve-btn" onclick="approveAppointment('${date}', ${appointment.id})">Approve</button>
+                            <button class="reject-btn" onclick="rejectAppointment('${date}', ${appointment.id})">Reject</button>
+                        ` : ''}
+                        ${appointment.status === 'approved' ? `
+                            <button class="complete-btn" onclick="openNotesModal('${date}', ${appointment.id})">Complete</button>
+                        ` : ''}
+                        ${appointment.status === 'completed' ? `
+                            <button class="notes-btn" onclick="viewNotes('${date}', ${appointment.id})">View Notes</button>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(appointmentDiv);
+            });
+        }
+    }
+
+    function formatTime(time) {
+        const [hours, minutes] = time.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    }
+
+    function deleteAppointment(date, appointmentId) {
+        if (appointments[date]) {
+            // Remove associated issues
+            const appointment = appointments[date].find(app => app.id === appointmentId);
+            if (appointment && appointment.issues) {
+                appointment.issues.forEach(issueId => {
+                    issues = issues.filter(issue => issue.id !== issueId);
+                });
+            }
+
+            appointments[date] = appointments[date].filter(app => app.id !== appointmentId);
+            if (appointments[date].length === 0) {
+                delete appointments[date];
+            }
+            renderAppointments(date);
+            updateStats();
+        }
+    }
+
+    function approveAppointment(date, appointmentId) {
+        if (appointments[date]) {
+            const appointment = appointments[date].find(app => app.id === appointmentId);
+            if (appointment) {
+                appointment.status = 'approved';
+                renderAppointments(date);
+                updateStats();
+            }
+        }
+    }
+
+    function rejectAppointment(date, appointmentId) {
+        if (appointments[date]) {
+            const appointment = appointments[date].find(app => app.id === appointmentId);
+            if (appointment) {
+                appointment.status = 'rejected';
+                renderAppointments(date);
+                updateStats();
+            }
+        }
+    }
+
+    function approveAllWeek() {
+        const weekStart = new Date(currentWeekStart);
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(weekStart);
+            date.setDate(date.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+
+            if (appointments[dateStr]) {
+                appointments[dateStr].forEach(appointment => {
+                    if (appointment.status === 'pending') {
+                        appointment.status = 'approved';
+                    }
+                });
+                renderAppointments(dateStr);
+            }
+        }
+        updateStats();
+    }
+
+    function openNotesModal(date, appointmentId) {
+        selectedDate = date;
+        selectedAppointmentId = appointmentId;
+
+        const appointment = appointments[date].find(app => app.id === appointmentId);
+        if (appointment) {
+            document.getElementById('appointmentDetails').textContent =
+                `${appointment.title} - ${formatTime(appointment.time)} on ${new Date(date).toLocaleDateString()}`;
+
+            // Set default completion time to now
+            const now = new Date();
+            const timeString = now.toISOString().slice(0, 16);
+            document.getElementById('completionTime').value = timeString;
+        }
+
+        document.getElementById('notesModal').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('notesModal').classList.add('show');
+        }, 10);
+    }
+
+    function closeNotesModal() {
+        const modal = document.getElementById('notesModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.getElementById('notesForm').reset();
+            document.getElementById('issueForm').style.display = 'none';
+            document.getElementById('hasIssues').checked = false;
+        }, 300);
+    }
+
+    function toggleIssueForm() {
+        const checkbox = document.getElementById('hasIssues');
+        const issueForm = document.getElementById('issueForm');
+        issueForm.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    document.getElementById('notesForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const notes = document.getElementById('meetingNotes').value;
+        const completionTime = document.getElementById('completionTime').value;
+        const hasIssues = document.getElementById('hasIssues').checked;
+
+        const appointment = appointments[selectedDate].find(app => app.id === selectedAppointmentId);
+        if (appointment) {
+            appointment.status = 'completed';
+            appointment.notes = notes;
+            appointment.completedAt = completionTime;
+            appointment.issues = appointment.issues || [];
+
+            // Handle issue creation
+            if (hasIssues) {
+                const issueTitle = document.getElementById('issueTitle').value;
+                const issueDescription = document.getElementById('issueDescription').value;
+                const issuePriority = document.getElementById('issuePriority').value;
+                const issueCategory = document.getElementById('issueCategory').value;
+                const assignedTo = document.getElementById('assignedTo').value;
+                const dueDate = document.getElementById('dueDate').value;
+
+                if (issueTitle && issueDescription) {
+                    const issue = {
+                        id: Date.now() + Math.random(),
+                        title: issueTitle,
+                        description: issueDescription,
+                        priority: issuePriority,
+                        category: issueCategory,
+                        assignedTo: assignedTo,
+                        dueDate: dueDate,
+                        status: 'open',
+                        createdAt: new Date().toISOString(),
+                        appointmentId: selectedAppointmentId,
+                        appointmentTitle: appointment.title,
+                        appointmentDate: selectedDate
+                    };
+
+                    issues.push(issue);
+                    appointment.issues.push(issue.id);
+                }
+            }
+
+            renderAppointments(selectedDate);
+            updateStats();
+            closeNotesModal();
+        }
+    });
+
+    function viewNotes(date, appointmentId) {
+        const appointment = appointments[date].find(app => app.id === appointmentId);
+        if (appointment && appointment.notes) {
+            const content = document.getElementById('meetingDetailsContent');
+            const completedDate = new Date(appointment.completedAt);
+
+            let issuesHtml = '';
+            if (appointment.issues && appointment.issues.length > 0) {
+                const appointmentIssues = issues.filter(issue => appointment.issues.includes(issue.id));
+                if (appointmentIssues.length > 0) {
+                    issuesHtml = `
+                    <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px; border: 1px solid #f59e0b;">
+                        <h4 style="color: #92400e; margin-bottom: 10px;">Associated Issues:</h4>
+                        ${appointmentIssues.map(issue => `
+                            <div style="background: white; padding: 10px; margin-bottom: 8px; border-radius: 6px;">
+                                <strong>${issue.title}</strong>
+                                <span class="issue-priority priority-${issue.priority}" style="float: right;">${issue.priority}</span>
+                                <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">${issue.description}</div>
+                                <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                                    Assigned to: ${issue.assignedTo || 'Unassigned'} |
+                                    Due: ${issue.dueDate ? new Date(issue.dueDate).toLocaleDateString() : 'No due date'}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                }
+            }
+
+            content.innerHTML = `
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #2d3748; margin-bottom: 10px;">${appointment.title}</h3>
+                <p style="color: #718096; margin-bottom: 5px;">
+                    <strong>Scheduled:</strong> ${formatTime(appointment.time)} on ${new Date(date).toLocaleDateString()}
+                </p>
+                <p style="color: #718096;">
+                    <strong>Completed:</strong> ${completedDate.toLocaleString()}
+                </p>
+            </div>
+            <div>
+                <h4 style="color: #2d3748; margin-bottom: 10px;">Meeting Notes:</h4>
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; white-space: pre-wrap; line-height: 1.6;">
+                    ${appointment.notes}
+                </div>
+            </div>
+            ${issuesHtml}
+        `;
+
+            document.getElementById('viewNotesModal').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('viewNotesModal').classList.add('show');
+            }, 10);
+        }
+    }
+
+    function closeViewNotesModal() {
+        const modal = document.getElementById('viewNotesModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    function openIssuesModal() {
+        renderIssuesList();
+        document.getElementById('issuesModal').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('issuesModal').classList.add('show');
+        }, 10);
+    }
+
+    function closeIssuesModal() {
+        const modal = document.getElementById('issuesModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    function renderIssuesList() {
+        const container = document.getElementById('issuesList');
+
+        if (issues.length === 0) {
+            container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #718096;">
+                <h3>No Issues Found</h3>
+                <p>Complete appointments with issues to see helpdesk tickets here.</p>
+            </div>
+        `;
+            return;
+        }
+
+        // Sort issues by priority and creation date
+        const priorityOrder = { 'critical': 0, 'high': 1, 'medium': 2, 'low': 3 };
+        const sortedIssues = [...issues].sort((a, b) => {
+            if (a.status !== b.status) {
+                return a.status === 'open' ? -1 : 1;
+            }
+            if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            }
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        container.innerHTML = sortedIssues.map(issue => `
+        <div class="issue-item" style="border-left: 4px solid
+            ${issue.status === 'open' ?
+            (issue.priority === 'critical' ? '#be185d' :
+                issue.priority === 'high' ? '#991b1b' :
+                    issue.priority === 'medium' ? '#92400e' : '#065f46')
+            : '#9ca3af'};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <h4 style="margin: 0; color: #2d3748;">${issue.title}</h4>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+                    ${issue.status === 'open' ?
+            `<button onclick="resolveIssue(${issue.id})" style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Mark Resolved</button>`
+            : '<span style="color: #059669; font-weight: 600; font-size: 0.8rem;">RESOLVED</span>'}
+                </div>
+            </div>
+            <p style="margin: 8px 0; color: #4a5568; line-height: 1.5;">${issue.description}</p>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #718096; margin-top: 10px;">
+                <div>
+                    <strong>From:</strong> ${issue.appointmentTitle} (${new Date(issue.appointmentDate).toLocaleDateString()})
+                </div>
+                <div>
+                    <strong>Assigned:</strong> ${issue.assignedTo || 'Unassigned'}
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #718096; margin-top: 5px;">
+                <div>
+                    <strong>Created:</strong> ${new Date(issue.createdAt).toLocaleDateString()}
+                </div>
+                <div>
+                    <strong>Due:</strong> ${issue.dueDate ? new Date(issue.dueDate).toLocaleDateString() : 'No due date'}
+                </div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    function resolveIssue(issueId) {
+        const issue = issues.find(i => i.id === issueId);
+        if (issue) {
+            issue.status = 'resolved';
+            issue.resolvedAt = new Date().toISOString();
+            renderIssuesList();
+            updateStats();
+        }
+    }
+
+    function exportIssues() {
+        if (issues.length === 0) {
+            alert('No issues to export.');
+            return;
+        }
+
+        const csvHeader = 'Title,Description,Priority,Category,Status,Assigned To,Due Date,Created Date,Appointment,Appointment Date\n';
+        const csvContent = issues.map(issue => {
+            return [
+                `"${issue.title}"`,
+                `"${issue.description}"`,
+                issue.priority,
+                issue.category,
+                issue.status,
+                `"${issue.assignedTo || ''}"`,
+                issue.dueDate || '',
+                new Date(issue.createdAt).toLocaleDateString(),
+                `"${issue.appointmentTitle}"`,
+                new Date(issue.appointmentDate).toLocaleDateString()
+            ].join(',');
+        }).join('\n');
+
+        const blob = new Blob([csvHeader + csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `issues_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+
+    function updateStats() {
+        let total = 0;
+        let pending = 0;
+        let approved = 0;
+        let rejected = 0;
+        let completed = 0;
+
+        Object.values(appointments).forEach(dayAppointments => {
+            dayAppointments.forEach(appointment => {
+                total++;
+                switch (appointment.status) {
+                    case 'pending': pending++; break;
+                    case 'approved': approved++; break;
+                    case 'rejected': rejected++; break;
+                    case 'completed': completed++; break;
+                }
+            });
+        });
+
+        const openIssues = issues.filter(issue => issue.status === 'open').length;
+
+        document.getElementById('totalAppointments').textContent = total;
+        document.getElementById('pendingAppointments').textContent = pending;
+        document.getElementById('approvedAppointments').textContent = approved;
+        document.getElementById('rejectedAppointments').textContent = rejected;
+        document.getElementById('completedAppointments').textContent = completed;
+        document.getElementById('totalIssues').textContent = openIssues;
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function(event) {
+        const modals = ['appointmentModal', 'notesModal', 'viewNotesModal', 'issuesModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    if (modalId === 'appointmentModal') {
+                        document.getElementById('appointmentForm').reset();
+                    } else if (modalId === 'notesModal') {
+                        document.getElementById('notesForm').reset();
+                        document.getElementById('issueForm').style.display = 'none';
+                        document.getElementById('hasIssues').checked = false;
+                    }
+                }, 300);
+            }
+        });
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const openModals = document.querySelectorAll('.modal.show');
+            openModals.forEach(modal => {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            });
+        }
+    });
+</script>
+</body>
+</html>
