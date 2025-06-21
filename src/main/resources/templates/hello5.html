@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Appointment System</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --secondary-gradient: linear-gradient(135deg, #16a085 0%, #f4d03f 100%);
+            --accent-gradient: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            --danger-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            --success-gradient: linear-gradient(135deg, #0f4425 0%, #2ecc71 100%);
+            --info-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            --light-gradient: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            --dark-gradient: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--success-gradient);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            background: white;
+           // border-radius: 16px;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+        }
+
+        .header {
+            background: var(--success-gradient);
+            position: relative;
+            color: white;
+            padding: 24px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                    linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 10px 10px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .header > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header h3 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 0.88rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .week-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .week-nav button {
+            background: var(--success-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .week-nav button:hover {
+            background: var(--success-gradient);
+            transform: translateY(-2px);
+        }
+
+        .current-week {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #2d3748;
+        }
+
+        .top-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .approval-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .add-appointment-main {
+            background: var(--success-gradient);
+            color: white;
+            border: none;
+            padding: 9.6px 19.2px;
+            border-radius: 6.4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-appointment-main:hover {
+            background: var(--success-gradient);
+            transform: translateY(-2px);
+        }
+
+        .approve-all-btn {
+            background: #ed8936;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6.4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .approve-all-btn:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+        }
+
+        .view-issues-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6.4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .view-issues-btn:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+
+        .calendar {
+            padding: 24px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+        }
+
+        .day-header {
+            background: var(--success-gradient);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 450;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.88rem;
+        }
+
+        .day-cell {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 0 0 8px 8px;
+            min-height: 240px;
+            padding: 12px;
+            position: relative;
+        }
+
+        .day-date {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .appointment {
+            background: white;
+            border-radius: 6.4px;
+            padding: 9.6px;
+            margin-bottom: 8px;
+            box-shadow: 0 1.6px 3.2px rgba(0,0,0,0.1);
+            position: relative;
+            border-left: 3.2px solid #cbd5e0;
+            transition: all 0.3s ease;
+        }
+
+        .appointment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3.2px 6.4px rgba(0,0,0,0.15);
+        }
+
+        .appointment.pending {
+            border-left-color: #f39c12;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        }
+
+        .appointment.approved {
+            border-left-color: #27ae60;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+
+        .appointment.rejected {
+            border-left-color: #fc8181;
+            background: #4ae31b;
+        }
+
+        .appointment.completed {
+            border-left-color: #4299e1;
+            background: #67b8e2;
+        }
+
+        .appointment-time {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.72rem;
+        }
+
+        .appointment-title {
+            font-weight: 600;
+            margin: 4px 0;
+            color: #2d3748;
+        }
+
+        .appointment-status {
+            font-size: 0.64rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #718096;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 6.4px;
+            flex-wrap: wrap;
+        }
+
+        .appointment-actions button {
+            font-size: 0.56rem;
+            padding: 3.2px 6.4px;
+            border: none;
+            border-radius: 3.2px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .approve-btn {
+            background: #38a169;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .complete-btn {
+            background: #3182ce;
+            color: white;
+        }
+
+        .notes-btn {
+            background: #805ad5;
+            color: white;
+        }
+
+        .comment-btn {
+            background: #4299e1;
+            color: white;
+        }
+
+        .appointment-actions button:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .issues-indicator {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.56rem;
+            font-weight: 600;
+        }
+
+        .comments-indicator {
+            position: absolute;
+            top: -4px;
+            right: 12px;
+            background: #4299e1;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.56rem;
+            font-weight: 600;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            padding: 24px;
+            background: #f8fafc;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 1.6px 3.2px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3.2px 6.4px rgba(0,0,0,0.15);
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-weight: 600;
+            font-size: 0.72rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 40px auto;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+            transform: translateY(-40px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-size: 1.44rem;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6.4px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 9.6px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6.4px;
+            font-size: 0.8rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 9.6px 19.2px;
+            border: none;
+            border-radius: 6.4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+
+        .issue-section {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .issue-section h3 {
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .issue-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .issue-checkbox input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .issues-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .issue-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1.6px 3.2px rgba(0,0,0,0.1);
+        }
+
+        .issue-priority {
+            padding: 3.2px 6.4px;
+            border-radius: 3.2px;
+            font-size: 0.56rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-low {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-high {
+            background: #fed7d7;
+            color: #822727;
+        }
+
+        .priority-critical {
+            background: #fbb6ce;
+            color: #702459;
+        }
+
+        /* Comment styles */
+        .comments-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #4299e1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+
+        .comment-timestamp {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+
+        .comment-text {
+            color: #4a5568;
+            line-height: 1.5;
+            font-size: 0.85rem;
+        }
+
+        .comment-form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .comment-user-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .week-nav {
+                justify-content: center;
+            }
+
+            .top-controls {
+                justify-content: center;
+            }
+
+            .approval-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img th:src="@{/images/logo.png}"
+             alt="Freight Logo" style="height: 50px;
+             vertical-align: middle; margin-right: 10px;" />
+        <div class="header-text">
+            <h3>Client Liason Pre-Plans</h3>
+            <p>Manage your client appointments with ease.</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="week-nav">
+            <button onclick="previousWeek()"> <i class="fas fa-chevron-left"></i></button>
+            <span class="current-week" id="currentWeek">Week of June 16 - June 20, 2025</span>
+            <button onclick="nextWeek()"> <i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="top-controls">
+            <button class="add-appointment-main" onclick="openDaySelectionModal()">+ Add Appointment</button>
+        </div>
+        <div class="approval-controls">
+            <button class="approve-all-btn" onclick="approveAllWeek()">Approve All Week</button>
+            <button class="view-issues-btn" onclick="openIssuesModal()">View Issues</button>
+        </div>
+    </div>
+
+    <div class="calendar">
+        <div class="calendar-grid" id="calendar">
+            <!-- Calendar will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <span class="stat-value" id="totalAppointments">0</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="pendingAppointments">0</span>
+            <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="approvedAppointments">0</span>
+            <span class="stat-label">Approved</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="rejectedAppointments">0</span>
+            <span class="stat-label">Rejected</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="completedAppointments">0</span>
+            <span class="stat-label">Completed</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="totalIssues">0</span>
+            <span class="stat-label">Issues</span>
+        </div>
+    </div>
+</div>
+
+<!-- Day Selection Modal -->
+<div id="daySelectionModal" class="modal">
+    <div class="modal-content">
+        <h2>Select Day for Appointment</h2>
+        <div class="form-group">
+            <label for="daySelect">Choose a day:</label>
+            <select id="daySelect" required>
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeDaySelectionModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="proceedToAppointmentModal()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Modal -->
+<div id="appointmentModal" class="modal">
+    <div class="modal-content">
+        <h2>Create New Appointment</h2>
+        <form id="appointmentForm">
+            <div class="form-group">
+                <label for="appointmentTitle">Client Name:</label>
+                <input type="text" id="appointmentTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="appointmentTime">Time:</label>
+                <input type="time" id="appointmentTime" required>
+            </div>
+            <div class="form-group">
+                <label for="appointmentDescription">Agenda:</label>
+                <textarea id="appointmentDescription" rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create Appointment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Comments Modal -->
+<div id="commentsModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <h2>Comments</h2>
+        <p id="commentAppointmentDetails" style="color: #718096; margin-bottom: 20px;"></p>
+
+        <div class="comments-section" id="commentsContainer">
+            <!-- Comments will be populated here -->
+        </div>
+
+        <div class="comment-form">
+            <textarea id="newCommentText" class="comment-input" placeholder="Add a comment..."></textarea>
+            <div class="comment-actions">
+                <input type="text" id="commentAuthor" class="comment-user-input" placeholder="Your name" value="Admin">
+                <button type="button" class="btn btn-primary" onclick="addComment()">Add Comment</button>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeCommentsModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Meeting Notes Modal -->
+<div id="notesModal" class="modal">
+    <div class="modal-content">
+        <h2>Mark Appointment as Completed</h2>
+        <p id="appointmentDetails" style="color: #718096; margin-bottom: 20px;"></p>
+        <form id="notesForm">
+            <div class="form-group">
+                <label for="meetingNotes">Meeting Notes:</label>
+                <textarea id="meetingNotes" rows="6" placeholder="Enter what transpired during the meeting..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="completionTime">Actual Meeting Time:</label>
+                <input type="datetime-local" id="completionTime" required>
+            </div>
+
+            <div class="issue-section">
+                <h3>🚨 Issue Tracking</h3>
+                <div class="issue-checkbox">
+                    <input type="checkbox" id="hasIssues" onchange="toggleIssueForm()">
+                    <label for="hasIssues">This meeting resulted in issues that need follow-up action</label>
+                </div>
+
+                <div id="issueForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="issueTitle">Issue Title:</label>
+                        <input type="text" id="issueTitle" placeholder="Brief description of the issue">
+                    </div>
+                    <div class="form-group">
+                        <label for="issueDescription">Issue Description:</label>
+                        <textarea id="issueDescription" rows="4" placeholder="Detailed description of the issue and required actions"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="issuePriority">Priority Level:</label>
+                        <select id="issuePriority">
+                            <option value="low">Low - Can be addressed when convenient</option>
+                            <option value="medium" selected>Medium - Should be addressed within a week</option>
+                            <option value="high">High - Needs attention within 2-3 days</option>
+                            <option value="critical">Critical - Immediate action required</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="issueCategory">Category:</label>
+                        <select id="issueCategory">
+                            <option value="technical">Technical Issue</option>
+                            <option value="process">Process Improvement</option>
+                            <option value="resource">Resource Request</option>
+                            <option value="policy">Policy Clarification</option>
+                            <option value="training">Training Need</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignedTo">Assign To:</label>
+                        <input type="text" id="assignedTo" placeholder="Person or department responsible for resolution">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date:</label>
+                        <input type="date" id="dueDate">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeNotesModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Mark as Completed</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Notes Modal -->
+<div id="viewNotesModal" class="modal">
+    <div class="modal-content">
+        <h2>Meeting Details</h2>
+        <div id="meetingDetailsContent">
+            <!-- Meeting details will be populated here -->
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeViewNotesModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Issues Modal -->
+<div id="issuesModal" class="modal">
+    <div class="modal-content">
+        <h2>All Issues & Helpdesk Tickets</h2>
+        <div class="issues-list" id="issuesList">
+            <!-- Issues will be populated here -->
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeIssuesModal()">Close</button>
+            <button type="button" class="btn btn-warning" onclick="exportIssues()">Export Issues</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global variables
+    let appointments = {};
+    let issues = [];
+    let currentWeekStart = new Date();
+    let selectedDate = null;
+    let selectedAppointmentId = null;
+
+    // Initialize the calendar
+    document.addEventListener('DOMContentLoaded', function() {
+        setCurrentWeek();
+        initializeDefaultDatetime();
+        generateCalendar();
+        updateStats();
+    });
+
+    function setCurrentWeek() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        currentWeekStart = new Date(today);
+        currentWeekStart.setDate(today.getDate() + diff);
+    }
+
+    function initializeDefaultDatetime() {
+        const now = new Date();
+        const dateTimeString = now.toISOString().slice(0, 16);
+        const completionTimeInput = document.getElementById('completionTime');
+        if (completionTimeInput) {
+            completionTimeInput.value = dateTimeString;
+        }
+    }
+
+    function generateCalendar() {
+        const calendar = document.getElementById('calendar');
+        calendar.innerHTML = '';
+
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const currentWeek = getCurrentWeekDates();
+
+        // Create headers
+        weekDays.forEach((day, index) => {
+            const header = document.createElement('div');
+            header.className = 'day-header';
+            header.textContent = day;
+            calendar.appendChild(header);
+        });
+
+        // Create day cells
+        currentWeek.forEach((date, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'day-cell';
+
+            const dateElement = document.createElement('div');
+            dateElement.className = 'day-date';
+            dateElement.textContent = date.getDate();
+            cell.appendChild(dateElement);
+
+            // Add appointments for this day
+            const dayKey = formatDate(date);
+            if (appointments[dayKey]) {
+                appointments[dayKey].forEach(appointment => {
+                    const appointmentElement = createAppointmentElement(appointment);
+                    cell.appendChild(appointmentElement);
+                });
+            }
+
+            calendar.appendChild(cell);
+        });
+
+        updateWeekDisplay();
+    }
+
+    function getCurrentWeekDates() {
+        const dates = [];
+        for (let i = 0; i < 5; i++) {
+            const date = new Date(currentWeekStart);
+            date.setDate(currentWeekStart.getDate() + i);
+            dates.push(date);
+        }
+        return dates;
+    }
+
+    function createAppointmentElement(appointment) {
+        const element = document.createElement('div');
+        element.className = `appointment ${appointment.status}`;
+
+        // Add issue indicator if appointment has issues
+        if (appointment.issues && appointment.issues.length > 0) {
+            const issueIndicator = document.createElement('div');
+            issueIndicator.className = 'issues-indicator';
+            issueIndicator.textContent = appointment.issues.length;
+            element.appendChild(issueIndicator);
+        }
+
+        // Add comments indicator if appointment has comments
+        if (appointment.comments && appointment.comments.length > 0) {
+            const commentsIndicator = document.createElement('div');
+            commentsIndicator.className = 'comments-indicator';
+            commentsIndicator.textContent = appointment.comments.length;
+            element.appendChild(commentsIndicator);
+        }
+
+        element.innerHTML += `
+        <div class="appointment-time">${appointment.time}</div>
+        <div class="appointment-title">${appointment.title}</div>
+        <div class="appointment-status">${appointment.status}</div>
+        ${appointment.description ? `<div style="font-size: 0.7rem; color: #666; margin-top: 4px;">${appointment.description}</div>` : ''}
+        <div class="appointment-actions">
+            ${getActionButtons(appointment)}
+        </div>
+    `;
+
+        return element;
+    }
+
+   function getActionButtons(appointment) {
+        let buttons = '';
+
+        if (appointment.status === 'pending') {
+            buttons += '<button class="approve-btn" onclick="approveAppointment(\'' + appointment.id + '\')">Approve</button>';
+            // buttons += '<button class="reject-btn" onclick="rejectAppointment(\'' + appointment.id + '\')">Reject</button>';
+        }
+
+        if (appointment.status === 'approved') {
+            buttons += '<button class="complete-btn" onclick="openNotesModal(\'' + appointment.id + '\')">Complete</button>';
+        }
+
+        if (appointment.status === 'completed') {
+            buttons += '<button class="notes-btn" onclick="viewNotes(\'' + appointment.id + '\')">View Notes</button>';
+        }
+
+        buttons += '<button class="comment-btn" onclick="openCommentsModal(\'' + appointment.id + '\')">Comments</button>';
+
+        // Only show delete button for pending and rejected appointments
+        if (appointment.status === 'pending' || appointment.status === 'rejected') {
+            buttons += '<button class="delete-btn" onclick="deleteAppointment(\'' + appointment.id + '\')">Delete</button>';
+        }
+
+        return buttons;
+    }
+
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function updateWeekDisplay() {
+        const weekElement = document.getElementById('currentWeek');
+        const endDate = new Date(currentWeekStart);
+        endDate.setDate(currentWeekStart.getDate() + 4);
+
+        const options = { month: 'long', day: 'numeric' };
+        const startStr = currentWeekStart.toLocaleDateString('en-US', options);
+        const endStr = endDate.toLocaleDateString('en-US', options);
+        const year = currentWeekStart.getFullYear();
+
+        weekElement.textContent = `Week of ${startStr} - ${endStr}, ${year}`;
+    }
+
+    function previousWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        generateCalendar();
+        updateStats();
+    }
+
+    function nextWeek() {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        generateCalendar();
+        updateStats();
+    }
+
+    function openDaySelectionModal() {
+        const modal = document.getElementById('daySelectionModal');
+        const select = document.getElementById('daySelect');
+
+        // Clear previous options
+        select.innerHTML = '';
+
+        // Add current week options
+        const currentWeek = getCurrentWeekDates();
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+        currentWeek.forEach((date, index) => {
+            const option = document.createElement('option');
+            option.value = formatDate(date);
+            option.textContent = `${weekDays[index]} - ${date.toLocaleDateString()}`;
+            select.appendChild(option);
+        });
+
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeDaySelectionModal() {
+        const modal = document.getElementById('daySelectionModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    function proceedToAppointmentModal() {
+        const select = document.getElementById('daySelect');
+        selectedDate = select.value;
+
+        if (!selectedDate) {
+            alert('Please select a day');
+            return;
+        }
+
+        closeDaySelectionModal();
+        setTimeout(() => {
+            const modal = document.getElementById('appointmentModal');
+            modal.style.display = 'block';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }, 300);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('appointmentModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+
+        // Reset form
+        document.getElementById('appointmentForm').reset();
+        selectedDate = null;
+    }
+
+    // Handle appointment form submission
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('appointmentTitle').value;
+        const time = document.getElementById('appointmentTime').value;
+        const description = document.getElementById('appointmentDescription').value;
+
+        if (!selectedDate) {
+            alert('No date selected');
+            return;
+        }
+
+        const appointment = {
+            id: generateId(),
+            title: title,
+            time: time,
+            description: description,
+            status: 'pending',
+            date: selectedDate,
+            comments: [],
+            issues: []
+        };
+
+        if (!appointments[selectedDate]) {
+            appointments[selectedDate] = [];
+        }
+
+        appointments[selectedDate].push(appointment);
+
+        closeModal();
+        generateCalendar();
+        updateStats();
+    });
+
+    function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    function approveAppointment(id) {
+        const appointment = findAppointment(id);
+        if (appointment) {
+            appointment.status = 'approved';
+            generateCalendar();
+            updateStats();
+        }
+    }
+
+    function rejectAppointment(id) {
+        const appointment = findAppointment(id);
+        if (appointment) {
+            appointment.status = 'rejected';
+            generateCalendar();
+            updateStats();
+        }
+    }
+
+    function deleteAppointment(id) {
+        if (confirm('Are you sure you want to delete this appointment?')) {
+            for (const date in appointments) {
+                appointments[date] = appointments[date].filter(app => app.id !== id);
+                if (appointments[date].length === 0) {
+                    delete appointments[date];
+                }
+            }
+            generateCalendar();
+            updateStats();
+        }
+    }
+
+    function findAppointment(id) {
+        for (const date in appointments) {
+            const appointment = appointments[date].find(app => app.id === id);
+            if (appointment) return appointment;
+        }
+        return null;
+    }
+
+    function approveAllWeek() {
+        if (confirm('Are you sure you want to approve all pending appointments for this week?')) {
+            const currentWeek = getCurrentWeekDates();
+
+            currentWeek.forEach(date => {
+                const dayKey = formatDate(date);
+                if (appointments[dayKey]) {
+                    appointments[dayKey].forEach(appointment => {
+                        if (appointment.status === 'pending') {
+                            appointment.status = 'approved';
+                        }
+                    });
+                }
+            });
+
+            generateCalendar();
+            updateStats();
+        }
+    }
+
+    function openNotesModal(id) {
+        selectedAppointmentId = id;
+        const appointment = findAppointment(id);
+
+        if (!appointment) return;
+
+        document.getElementById('appointmentDetails').textContent =
+            `${appointment.title} - ${appointment.time} on ${new Date(appointment.date).toLocaleDateString()}`;
+
+        // Set default completion time to now
+        initializeDefaultDatetime();
+
+        const modal = document.getElementById('notesModal');
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeNotesModal() {
+        const modal = document.getElementById('notesModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+
+        // Reset form
+        document.getElementById('notesForm').reset();
+        document.getElementById('issueForm').style.display = 'none';
+        document.getElementById('hasIssues').checked = false;
+        selectedAppointmentId = null;
+    }
+
+    function toggleIssueForm() {
+        const checkbox = document.getElementById('hasIssues');
+        const issueForm = document.getElementById('issueForm');
+        issueForm.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    // Handle notes form submission
+    document.getElementById('notesForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const appointment = findAppointment(selectedAppointmentId);
+        if (!appointment) return;
+
+        const notes = document.getElementById('meetingNotes').value;
+        const completionTime = document.getElementById('completionTime').value;
+        const hasIssues = document.getElementById('hasIssues').checked;
+
+        appointment.status = 'completed';
+        appointment.notes = notes;
+        appointment.completionTime = completionTime;
+
+        if (hasIssues) {
+            const issue = {
+                id: generateId(),
+                appointmentId: selectedAppointmentId,
+                title: document.getElementById('issueTitle').value,
+                description: document.getElementById('issueDescription').value,
+                priority: document.getElementById('issuePriority').value,
+                category: document.getElementById('issueCategory').value,
+                assignedTo: document.getElementById('assignedTo').value,
+                dueDate: document.getElementById('dueDate').value,
+                status: 'open',
+                createdDate: new Date().toISOString(),
+                appointmentTitle: appointment.title,
+                appointmentDate: appointment.date
+            };
+
+            if (!appointment.issues) {
+                appointment.issues = [];
+            }
+            appointment.issues.push(issue);
+            issues.push(issue);
+        }
+
+        closeNotesModal();
+        generateCalendar();
+        updateStats();
+    });
+
+    function viewNotes(id) {
+        const appointment = findAppointment(id);
+        if (!appointment) return;
+
+        const content = document.getElementById('meetingDetailsContent');
+        content.innerHTML = `
+        <div style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <h3 style="color: #2d3748; margin-bottom: 15px;">Appointment Details</h3>
+            <p><strong>Client:</strong> ${appointment.title}</p>
+            <p><strong>Scheduled Time:</strong> ${appointment.time}</p>
+            <p><strong>Date:</strong> ${new Date(appointment.date).toLocaleDateString()}</p>
+            <p><strong>Agenda:</strong> ${appointment.description || 'No agenda specified'}</p>
+            <p><strong>Completed Time:</strong> ${new Date(appointment.completionTime).toLocaleString()}</p>
+        </div>
+        <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 4px solid #4299e1;">
+            <h4 style="color: #2d3748; margin-bottom: 10px;">Meeting Notes</h4>
+            <p style="line-height: 1.6; color: #4a5568;">${appointment.notes}</p>
+        </div>
+        ${appointment.issues && appointment.issues.length > 0 ? `
+            <div style="background: #fff5f5; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #e53e3e;">
+                <h4 style="color: #822727; margin-bottom: 15px;">🚨 Issues Generated</h4>
+                ${appointment.issues.map(issue => `
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <strong style="color: #2d3748;">${issue.title}</strong>
+                            <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+                        </div>
+                        <p style="color: #4a5568; margin-bottom: 8px;">${issue.description}</p>
+                        <div style="font-size: 0.8rem; color: #718096;">
+                            <p><strong>Category:</strong> ${issue.category}</p>
+                            <p><strong>Assigned to:</strong> ${issue.assignedTo}</p>
+                            <p><strong>Due:</strong> ${new Date(issue.dueDate).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        ` : ''}
+    `;
+
+        const modal = document.getElementById('viewNotesModal');
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeViewNotesModal() {
+        const modal = document.getElementById('viewNotesModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    function openCommentsModal(id) {
+        selectedAppointmentId = id;
+        const appointment = findAppointment(id);
+
+        if (!appointment) return;
+
+        document.getElementById('commentAppointmentDetails').textContent =
+            `${appointment.title} - ${appointment.time} on ${new Date(appointment.date).toLocaleDateString()}`;
+
+        displayComments(appointment.comments || []);
+
+        const modal = document.getElementById('commentsModal');
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeCommentsModal() {
+        const modal = document.getElementById('commentsModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+
+        // Clear comment form
+        document.getElementById('newCommentText').value = '';
+        selectedAppointmentId = null;
+    }
+
+    function displayComments(comments) {
+        const container = document.getElementById('commentsContainer');
+
+        if (!comments || comments.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #718096; padding: 20px;">No comments yet.</p>';
+            return;
+        }
+
+        container.innerHTML = comments.map(comment => `
+        <div class="comment-item">
+            <div class="comment-header">
+                <span class="comment-author">${comment.author}</span>
+                <span class="comment-timestamp">${new Date(comment.timestamp).toLocaleString()}</span>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+        </div>
+    `).join('');
+    }
+
+    function addComment() {
+        const appointment = findAppointment(selectedAppointmentId);
+        if (!appointment) return;
+
+        const text = document.getElementById('newCommentText').value.trim();
+        const author = document.getElementById('commentAuthor').value.trim() || 'Anonymous';
+
+        if (!text) {
+            alert('Please enter a comment');
+            return;
+        }
+
+        if (!appointment.comments) {
+            appointment.comments = [];
+        }
+
+        const comment = {
+            id: generateId(),
+            text: text,
+            author: author,
+            timestamp: new Date().toISOString()
+        };
+
+        appointment.comments.push(comment);
+
+        // Clear the form
+        document.getElementById('newCommentText').value = '';
+
+        // Refresh comments display
+        displayComments(appointment.comments);
+
+        // Regenerate calendar to update comment indicators
+        generateCalendar();
+    }
+
+    function openIssuesModal() {
+        displayIssues();
+        const modal = document.getElementById('issuesModal');
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeIssuesModal() {
+        const modal = document.getElementById('issuesModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+  /*  function displayIssues() {
+        const container = document.getElementById('issuesList');
+
+        if (issues.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #718096; padding: 40px;">No issues or helpdesk tickets found.</p>';
+            return;
+        }
+
+        // Sort issues by priority and date
+        const sortedIssues = issues.sort((a, b) => {
+            const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+            if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                return priorityOrder[b.priority] - priorityOrder[a.priority];
+            }
+            return new Date(a.createdDate) - new Date(b.createdDate);
+        });
+
+        container.innerHTML = sortedIssues.map(issue => `
+        <div class="issue-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <h4 style="color: #2d3748; margin: 0;">${issue.title}</h4>
+                <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+            </div>
+            <p style="color: #4a5568; margin-bottom: 10px; line-height: 1.5;">${issue.description}</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 0.8rem; color: #718096;">
+                <div><strong>From Appointment:</strong> ${issue.appointmentTitle}</div>
+                <div><strong>Meeting Date:</strong> ${new Date(issue.appointmentDate).toLocaleDateString()}</div>
+                <div><strong>Category:</strong> ${issue.category}</div>
+                <div><strong>Assigned to:</strong> ${issue.assignedTo}</div>
+                <div><strong>Due Date:</strong> ${new Date(issue.dueDate).toLocaleDateString()}</div>
+                <div><strong>Status:</strong> ${issue.status}</div>
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="btn btn-sm" style="background: #38a169; color: white; padding: 4px 8px; font-size: 0.7rem;"
+                        onclick="markIssueResolved('${issue.id}')">Mark Resolved</button>
+                <button class="btn btn-sm" style="background: #e53e3e; color: white; padding: 4px 8px; font-size: 0.7rem; margin-left: 5px;"
+                        onclick="deleteIssue('${issue.id}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+    }*/
+    function displayIssues() {
+        const container = document.getElementById('issuesList');
+
+        if (issues.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #718096; padding: 40px;">No issues or helpdesk tickets found.</p>';
+            return;
+        }
+
+        // Sort issues by priority and date
+        const sortedIssues = issues.sort((a, b) => {
+            const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+            if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                return priorityOrder[b.priority] - priorityOrder[a.priority];
+            }
+            return new Date(a.createdDate) - new Date(b.createdDate);
+        });
+
+        container.innerHTML = sortedIssues.map(issue => `
+        <div class="issue-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <h4 style="color: #2d3748; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    ${issue.title}
+                    ${issue.status === 'resolved' ? '<span style="color: #38a169; font-size: 1.2rem;">✓</span>' : ''}
+                </h4>
+                <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+            </div>
+            <p style="color: #4a5568; margin-bottom: 10px; line-height: 1.5;">${issue.description}</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 0.8rem; color: #718096;">
+                <div><strong>From Appointment:</strong> ${issue.appointmentTitle}</div>
+                <div><strong>Meeting Date:</strong> ${new Date(issue.appointmentDate).toLocaleDateString()}</div>
+                <div><strong>Category:</strong> ${issue.category}</div>
+                <div><strong>Assigned to:</strong> ${issue.assignedTo}</div>
+                <div><strong>Due Date:</strong> ${new Date(issue.dueDate).toLocaleDateString()}</div>
+                <div><strong>Status:</strong>
+                    <span style="color: ${issue.status === 'resolved' ? '#38a169' : '#718096'}; font-weight: ${issue.status === 'resolved' ? '600' : 'normal'};">
+                        ${issue.status === 'resolved' ? 'Resolved ✓' : issue.status}
+                    </span>
+                </div>
+                ${issue.status === 'resolved' && issue.resolvedDate ?
+            `<div><strong>Resolved Date:</strong> ${new Date(issue.resolvedDate).toLocaleDateString()}</div>` :
+            ''
+        }
+            </div>
+            ${issue.status !== 'resolved' ? `
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-sm" style="background: #38a169; color: white; padding: 4px 8px; font-size: 0.7rem;"
+                            onclick="markIssueResolved('${issue.id}')">Mark Resolved</button>
+                    <button class="btn btn-sm" style="background: #e53e3e; color: white; padding: 4px 8px; font-size: 0.7rem; margin-left: 5px;"
+                            onclick="deleteIssue('${issue.id}')">Delete</button>
+                </div>
+            ` : `
+                <div style="margin-top: 10px; padding: 8px; background: #f0fff4; border-radius: 4px; border-left: 3px solid #38a169;">
+                    <span style="color: #38a169; font-weight: 600; font-size: 0.8rem;">
+                        ✓ This issue has been resolved
+                    </span>
+                </div>
+            `}
+        </div>
+    `).join('');
+    }
+
+    function markIssueResolved(issueId) {
+        if (confirm('Are you sure you want to mark this issue as resolved?')) {
+            const issue = issues.find(i => i.id === issueId);
+            if (issue) {
+                issue.status = 'resolved';
+                issue.resolvedDate = new Date().toISOString();
+                displayIssues();
+                updateStats();
+            }
+        }
+    }
+
+    function deleteIssue(issueId) {
+        if (confirm('Are you sure you want to delete this issue?')) {
+            const issueIndex = issues.findIndex(i => i.id === issueId);
+            if (issueIndex > -1) {
+                const issue = issues[issueIndex];
+
+                // Remove from global issues array
+                issues.splice(issueIndex, 1);
+
+                // Remove from appointment's issues array
+                const appointment = findAppointment(issue.appointmentId);
+                if (appointment && appointment.issues) {
+                    appointment.issues = appointment.issues.filter(i => i.id !== issueId);
+                }
+
+                displayIssues();
+                generateCalendar();
+                updateStats();
+            }
+        }
+    }
+
+    function exportIssues() {
+        if (issues.length === 0) {
+            alert('No issues to export');
+            return;
+        }
+
+        const csvContent = [
+            ['Title', 'Description', 'Priority', 'Category', 'Assigned To', 'Due Date', 'Status', 'From Appointment', 'Meeting Date', 'Created Date'].join(','),
+            ...issues.map(issue => [
+                `"${issue.title}"`,
+                `"${issue.description}"`,
+                issue.priority,
+                issue.category,
+                `"${issue.assignedTo}"`,
+                issue.dueDate,
+                issue.status,
+                `"${issue.appointmentTitle}"`,
+                issue.appointmentDate,
+                new Date(issue.createdDate).toLocaleDateString()
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `issues-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+
+    function updateStats() {
+        let total = 0, pending = 0, approved = 0, rejected = 0, completed = 0, totalIssuesCount = 0;
+
+        // Count appointments
+        Object.values(appointments).forEach(dayAppointments => {
+            dayAppointments.forEach(appointment => {
+                total++;
+                switch (appointment.status) {
+                    case 'pending': pending++; break;
+                    case 'approved': approved++; break;
+                    case 'rejected': rejected++; break;
+                    case 'completed': completed++; break;
+                }
+            });
+        });
+
+        // Count open issues
+        totalIssuesCount = issues.filter(issue => issue.status === 'open').length;
+
+        // Update DOM
+        document.getElementById('totalAppointments').textContent = total;
+        document.getElementById('pendingAppointments').textContent = pending;
+        document.getElementById('approvedAppointments').textContent = approved;
+        document.getElementById('rejectedAppointments').textContent = rejected;
+        document.getElementById('completedAppointments').textContent = completed;
+        document.getElementById('totalIssues').textContent = totalIssuesCount;
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.style.display = 'none', 300);
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Appointment System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --secondary-gradient: linear-gradient(135deg, #16a085 0%, #f4d03f 100%);
+            --accent-gradient: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            --danger-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            --success-gradient: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            --info-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+        }
+
+        .navbar {
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .system-header {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem 0;
+            border-radius: 0 0 1.5rem 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .system-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .system-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .week-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .week-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: #dee2e6;
+        }
+
+        .day-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .day-cell {
+            background: white;
+            min-height: 350px;
+            padding: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .day-cell:hover {
+            background: #f8f9fa;
+        }
+
+        .day-date {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .appointment {
+            background: rgba(255,255,255,0.95);
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .appointment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .appointment.pending {
+            border-left-color: #f39c12;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        }
+
+        .appointment.approved {
+            border-left-color: #27ae60;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+
+        .appointment.rejected {
+            border-left-color: #e74c3c;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        }
+
+        .appointment.completed {
+            border-left-color: #3498db;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .appointment-time {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .appointment-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .appointment-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.5rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-pending {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .status-approved {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .status-rejected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .status-completed {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .action-btn.approve {
+            background: var(--success-gradient);
+        }
+
+        .action-btn.reject {
+            background: var(--danger-gradient);
+        }
+
+        .action-btn.complete {
+            background: var(--info-gradient);
+        }
+
+        .action-btn.notes {
+            background: var(--accent-gradient);
+        }
+
+        .action-btn.delete {
+            background: var(--danger-gradient);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .issues-indicator {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--danger-gradient);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1200px) {
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .system-header h1 {
+                font-size: 2rem;
+            }
+
+            .week-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .day-cell {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <!-- System Header -->
+    <div class="system-header">
+        <div class="container">
+            <h4><i class="fas fa-calendar-alt me-3"></i>Client Liaison Pre-Plans</h4>
+            <p>Manage your client appointments with ease</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="week-navigation">
+                <button class="nav-btn" onclick="previousWeek()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h3 class="week-title" id="currentWeek">Week of June 16 - June 20, 2025</h3>
+                <button class="nav-btn" onclick="nextWeek()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openDaySelectionModal()">
+                    <i class="fas fa-plus me-2"></i>Add Appointment
+                </button>
+                <button class="btn btn-success" onclick="approveAllWeek()">
+                    <i class="fas fa-check-double me-2"></i>Approve All Week
+                </button>
+                <button class="btn btn-warning" onclick="openIssuesModal()">
+                    <i class="fas fa-exclamation-triangle me-2"></i>View Issues
+                </button>
+                <button class="btn btn-danger" onclick="exportData()">
+                    <i class="fas fa-download me-2"></i>Export Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Calendar Container -->
+        <div class="calendar-container">
+            <div class="calendar-grid" id="calendar">
+                <!-- Day Headers -->
+                <div class="day-header">Monday</div>
+                <div class="day-header">Tuesday</div>
+                <div class="day-header">Wednesday</div>
+                <div class="day-header">Thursday</div>
+                <div class="day-header">Friday</div>
+
+                <!-- Day Cells -->
+                <div class="day-cell" data-date="2025-06-16">
+                    <div class="day-date">16</div>
+
+                </div>
+
+                <div class="day-cell" data-date="2025-06-17">
+                    <div class="day-date">17</div>
+
+                </div>
+
+                <div class="day-cell" data-date="2025-06-18">
+                    <div class="day-date">18</div>
+                    <div class="appointment rejected" onclick="viewAppointment(4)">
+                        <div class="appointment-time">11:00 AM</div>
+                        <div class="appointment-title">StartUp Inc</div>
+                        <div class="appointment-description">Initial consultation</div>
+                        <div class="appointment-status status-rejected">Rejected</div>
+                        <div class="appointment-actions">
+                            <button class="action-btn delete" onclick="deleteAppointment(4)">Delete</button>
+                        </div>
+                    </div>
+                    <div class="appointment pending" onclick="viewAppointment(5)">
+                        <div class="appointment-time">03:30 PM</div>
+                        <div class="appointment-title">Enterprise Corp</div>
+                        <div class="appointment-description">Service review</div>
+                        <div class="appointment-status status-pending">Pending</div>
+                        <div class="appointment-actions">
+                            <button class="action-btn approve" onclick="approveAppointment(5)">Approve</button>
+                            <button class="action-btn reject" onclick="rejectAppointment(5)">Reject</button>
+                            <button class="action-btn notes" onclick="addNotes(5)">Notes</button>
+                            <button class="action-btn delete" onclick="deleteAppointment(5)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="day-cell" data-date="2025-06-19">
+                    <div class="day-date">19</div>
+                    <div class="appointment approved" onclick="viewAppointment(6)">
+                        <div class="appointment-time">01:00 PM</div>
+                        <div class="appointment-title">Innovation Labs</div>
+                        <div class="appointment-description">Partnership discussion</div>
+                        <div class="appointment-status status-approved">Approved</div>
+                        <div class="appointment-actions">
+                            <button class="action-btn complete" onclick="completeAppointment(6)">Complete</button>
+                            <button class="action-btn notes" onclick="addNotes(6)">Notes</button>
+                            <button class="action-btn delete" onclick="deleteAppointment(6)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="day-cell" data-date="2025-06-20">
+                    <div class="day-date">20</div>
+                    <div class="appointment pending" onclick="viewAppointment(7)">
+                        <div class="issues-indicator">2</div>
+                        <div class="appointment-time">04:00 PM</div>
+                        <div class="appointment-title">Future Systems</div>
+                        <div class="appointment-description">Technology assessment</div>
+                        <div class="appointment-status status-pending">Pending</div>
+                        <div class="appointment-actions">
+                            <button class="action-btn approve" onclick="approveAppointment(7)">Approve</button>
+                            <button class="action-btn reject" onclick="rejectAppointment(7)">Reject</button>
+                            <button class="action-btn notes" onclick="addNotes(7)">Notes</button>
+                            <button class="action-btn delete" onclick="deleteAppointment(7)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check" style="color: #3498db;"></i>
+                </div>
+                <span class="stat-value" id="totalAppointments">7</span>
+                <span class="stat-label">Total Appointments</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock" style="color: #f39c12;"></i>
+                </div>
+                <span class="stat-value" id="pendingAppointments">3</span>
+                <span class="stat-label">Pending Approval</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                </div>
+                <span class="stat-value" id="approvedAppointments">2</span>
+                <span class="stat-label">Approved</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
+                </div>
+                <span class="stat-value" id="rejectedAppointments">1</span>
+                <span class="stat-label">Rejected</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-flag-checkered" style="color: #8e44ad;"></i>
+                </div>
+                <span class="stat-value" id="completedAppointments">1</span>
+                <span class="stat-label">Completed</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle" style="color: #e67e22;"></i>
+                </div>
+                <span class="stat-value" id="totalIssues">3</span>
+                <span class="stat-label">Active Issues</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals will be added here -->
+<div id="daySelectionModal" class="modal">
+    <div class="modal-content">
+        <h2><i class="fas fa-calendar-day me-2"></i>Select Day for Appointment</h2>
+        <div class="form-group">
+            <label for="daySelect">Choose a day:</label>
+            <select id="daySelect" class="form-control" required>
+                <option value="2025-06-16">Monday, June 16</option>
+                <option value="2025-06-17">Tuesday, June 17</option>
+                <option value="2025-06-18">Wednesday, June 18</option>
+                <option value="2025-06-19">Thursday, June 19</option>
+                <option value="2025-06-20">Friday, June 20</option>
+            </select>
+        </div>
+        <div class="modal-actions d-flex gap-3 justify-content-end">
+            <button type="button" class="btn btn-secondary" onclick="closeDaySelectionModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="proceedToAppointmentModal()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+</body>
+</html>
